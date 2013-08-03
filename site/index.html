@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<style>
+			p{
+				display:inline;
+			}
+			p.nume{
+				color:red;	
+				border:1px dotted black;
+				margin-right:10px;
+			}
+			p.mesaj{
+				color:black;
+			}
+
+		div.chat{
+				width:100%;
+				height:500px;
+				border:2px dotted black;
+				overflow-y:scroll;
+				word-wrap: break-word;
+			}
+			#textbox{
+				width:80%;
+			}
+		</style>
+	<script src="socket.io/socket.io.js"></script>
+	
+	<script>
+		var socket = io.connect('http://stefandev.net:8000');
+		
+		function setUp(){
+			var nume = prompt('Nume?','').trim();
+			while(nume == "")nume = prompt('Nume?','').trim();
+			
+			socket.emit('nume', nume);
+		}
+		
+		function send()
+		{
+			var textbox = document.getElementById('textbox');
+			var text = textbox.value;
+			socket.emit('send', text);
+			textbox.value = '';		
+		}
+		
+		socket.on('get', function(msg){
+			var chat = document.getElementById('chat');
+			
+			chat.innerHTML += '<p class="nume">' + msg.nume + ' :</p>';
+			chat.innerHTML += '<p class="mesaj">' + msg.msg + '</p><hr>';
+			
+			chat.scrollTop = chat.scrollHeight;
+			
+		});
+		
+	</script>
+	
+	
+	</head>
+	<body onLoad="setUp();">
+		<div class="chat" id="chat">
+		</div></br>
+		<input type="text" id="textbox"></input>
+		<button type="button" onClick = "send();">Trimite</button>
+	</body>
+</html>
